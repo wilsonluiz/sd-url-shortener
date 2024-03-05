@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+
+  urls-db:
+    image: urls-db
+    build:
+      context: db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - shortener-net
+
+  products-api:
+    image: urls-api
+    build:
+      context: src/Labs.SystemDesign.UrlShortener
+    ports:
+      - "8080:8080"
+    networks:
+      - shortener-net
+    depends_on:
+      - urls-db
+
+networks:
+  shortener-net:

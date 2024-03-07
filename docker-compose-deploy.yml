@@ -40,7 +40,7 @@ services:
           - 'node.role == worker'
   
   urls-api:
-    image: inaciowilson/urls-api
+    image: inaciowilson/urls-api:v2
     ports:
       - "8080:8080"
     networks:

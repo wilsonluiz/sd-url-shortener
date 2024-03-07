@@ -4,49 +4,52 @@ services:
 
   urls-db:
     image: inaciowilson/urls-db
-    build:
-      context: db
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_DATABASE=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    restart: no
-    mem_limit: 250M
     networks:
       - shortener-net
-
+    deploy:
+      placement:
+        constraints:
+          - 'node.role == worker'
+  
   urls-cache:
     image: redis
     ports:
       - 6379:6379
-    restart: no
-    mem_limit: 250M
     networks:
       - shortener-net
-
+    deploy:
+      placement:
+        constraints:
+          - 'node.role == worker'
+          
   urls-redis-insight:
     image: redis/redisinsight:latest
-    restart: no
-    mem_limit: 250M
     ports:
       - "5540:5540"
     networks:
       - shortener-net
-    depends_on:
-      - urls-cache
-
+    deploy:
+      placement:
+        constraints:
+          - 'node.role == worker'
+  
   urls-api:
-    image: inaciowilson/urls-api:v2
-    build:
-      context: src
+    image: inaciowilson/urls-api
     ports:
       - "8080:8080"
-    restart: no
-    mem_limit: 250M
     networks:
       - shortener-net
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - 'node.role == worker'
     depends_on:
       - urls-db
       - urls-cache
